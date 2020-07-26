@@ -5,7 +5,9 @@
 ## Things to install
 
 python 3.7.x
+
 python3 pip
+
 (using pip3) opencv-python-contrib
 
 ## Other Links
