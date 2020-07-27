@@ -1,7 +1,8 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 from camera import Camera
-import cv2
+import numpy as np
+import time
 
 class Picam(Camera):
 
@@ -11,11 +12,12 @@ class Picam(Camera):
         self.camera.resolution = resolution
         self.camera.framerate = framerate
         self.rawCapture = PiRGBArray(self.camera, size=resolution)
+        time.sleep(0.1)
         self.stream = self.camera.capture_continuous(self.rawCapture,
             format="bgr", use_video_port=True)
         # initialize the frame and the variable used to indicate
         # if the thread should be stopped
-        self.frame = None
+        self.frame = np.zeros((resolution[1], resolution[0], 3), dtype=np.uint8)
         self.stopped = False
 
     def update(self):
@@ -32,3 +34,12 @@ class Picam(Camera):
                 self.rawCapture.close()
                 self.camera.close()
                 return
+              
+                
+if __name__ == '__main__':
+    
+    with Picam() as cam:
+        while(cam.running()):
+            frame = cam.read()
+            cam.display(frame)
+        
