@@ -20,3 +20,10 @@ class Webcam(Camera):
                 return
             # otherwise, read the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
+
+if __name__ == '__main__':
+
+    with Webcam() as cam:
+        while cam.running():
+            frame = cam.read()
+            cam.display(frame)
