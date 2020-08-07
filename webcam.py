@@ -7,10 +7,14 @@ class Webcam(Camera):
         # initialize the video camera stream and read the first frame
         # from the stream
         self.stream = cv2.VideoCapture(src)
-        (self.grabbed, self.frame) = self.stream.read()
+        (_, self.frame) = self.stream.read()
         # initialize the variable used to indicate if the thread should
         # be stopped
         self.stopped = False
+
+    def cleanup(self):
+        print('video stream 0 released')
+        self.stream.release()
 
     def update(self):
         # keep looping infinitely until the thread is stopped
@@ -18,12 +22,22 @@ class Webcam(Camera):
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
                 return
+
             # otherwise, read the next frame from the stream
-            (self.grabbed, self.frame) = self.stream.read()
+            (_, self.frame) = self.stream.read()
+
+    def resolution(self):
+        width = int(self.stream.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(self.stream.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        return (width, height)
 
 if __name__ == '__main__':
 
-    with Webcam() as cam:
+    from writer import Writer
+
+    with Webcam() as cam, Writer(cam.resolution()) as writer: 
         while cam.running():
-            frame = cam.read()
-            cam.display(frame)
+            frame = cam.read()  
+            if not writer.write(frame): break
+
+

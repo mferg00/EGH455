@@ -12,6 +12,7 @@ class Camera:
 
     def __exit__(self, type, value, traceback):
         self.stop()
+        self.cleanup()
 
     def running(self):
         return not self.stopped
@@ -19,8 +20,10 @@ class Camera:
     def update(self):
         raise NotImplementedError
 
+    def resolution(self):
+        raise NotImplementedError
+
     def start(self):
-        # start the thread to read frames from the video stream
         Thread(target=self.update, args=()).start()
         return self
 
@@ -30,10 +33,7 @@ class Camera:
     def stop(self):
         self.stopped = True
 
-    def display(self, frame):
-        cv2.imshow('frame', frame)
-        key = cv2.waitKey(1) & 0xFF 
+    def cleanup(self):
+        raise NotImplementedError
 
-        if (cv2.getWindowProperty('frame', cv2.WND_PROP_VISIBLE) < 1) \
-            or (key == ord('q')): 
-            self.stop()
+
