@@ -21,6 +21,7 @@ class Picam(Camera):
         self.stopped = False
 
     def cleanup(self):
+        print('picam closed')
         self.stream.close()
         self.raw.close()
         self.camera.close()
@@ -38,15 +39,16 @@ class Picam(Camera):
             # if the thread indicator variable is set, stop the thread
             # and resource camera resources
             if self.stopped:
+                self.cleanup()
                 return
               
                 
 if __name__ == '__main__':
     
-    from writer import Writer 
+    from recorder import Recorder
 
-    with Picam() as cam, Writer() as writer:
-        while(cam.running()):
+    with Picam() as cam, Recorder(cam.resolution()) as recorder:
+        while(cam.running() and recorder.running()):
             frame = cam.read()
-            if not writer.write(frame): break
+            recorder.write(frame)
         

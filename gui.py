@@ -12,7 +12,7 @@ class Gui:
         self.cleanup()
 
     def cleanup(self):
-        print('cv2 windows released')
+        print('cv2 windows closed')
         cv2.destroyAllWindows()
 
     def imshow(self, frame):

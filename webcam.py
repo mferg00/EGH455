@@ -13,7 +13,7 @@ class Webcam(Camera):
         self.stopped = False
 
     def cleanup(self):
-        print('video stream 0 released')
+        print('video stream 0 closed')
         self.stream.release()
 
     def update(self):
@@ -21,6 +21,7 @@ class Webcam(Camera):
         while True:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
+                self.cleanup()
                 return
 
             # otherwise, read the next frame from the stream
@@ -33,11 +34,11 @@ class Webcam(Camera):
 
 if __name__ == '__main__':
 
-    from writer import Writer
+    from gui import Gui
 
-    with Webcam() as cam, Writer(cam.resolution()) as writer: 
+    with Webcam() as cam, Gui() as gui: 
         while cam.running():
             frame = cam.read()  
-            if not writer.write(frame): break
+            if not gui.imshow(frame): break
 
 

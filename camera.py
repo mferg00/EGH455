@@ -12,7 +12,6 @@ class Camera:
 
     def __exit__(self, type, value, traceback):
         self.stop()
-        self.cleanup()
 
     def running(self):
         return not self.stopped
@@ -24,6 +23,7 @@ class Camera:
         raise NotImplementedError
 
     def start(self):
+        print('camera recording')
         Thread(target=self.update, args=()).start()
         return self
 
