@@ -19,7 +19,9 @@ python3 [file.py]
 
 ### To add changes from the pi/your pc to github
 ```
-git commit -am "message on what changed"
+git pull
+git add .
+git commit -m "message on what changed"
 git push
 ```
 

@@ -1,6 +1,6 @@
 from aruco import *
-# from webcam import Webcam as Cam
-from picam import Picam as Cam
+from webcam import Webcam as Cam
+# from picam import Picam as Cam
 from recorder import Recorder
 import cv2
 
