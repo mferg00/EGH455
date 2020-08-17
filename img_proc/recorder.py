@@ -1,10 +1,13 @@
 import time
 import cv2 
+from pathlib import Path
 
 class Recorder:
 
     def __init__(self, resolution: tuple, overwrite=True, \
         fps=20.0, time_limit=5):
+        Path("vids/").mkdir(exist_ok=True)
+
         if overwrite:
             filename = 'vids/output.avi'
         else:
