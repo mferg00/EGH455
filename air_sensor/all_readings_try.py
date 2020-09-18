@@ -49,7 +49,10 @@ def get_gases():
 
 start_time = time.time()
 
-gases_threshold=[0,0,0]
+gases_threshold=get_gases()
+
+print("The sensors are calibrating, please wait two minutes.")
+
 
 try:
     while True:
@@ -57,53 +60,50 @@ try:
         elapsed_time = time.time() - start_time
         
         if elapsed_time<120:
-            print("The sensors are calibrating, please wait two minutes.")
-            gases_calibration=get_gases()
-            pressure_calibration=bme280.get_pressure()
-	        humidity_calibration=bme280.get_humidity()
-	        light_calibration=ltr559.get_lux()
-	        temperature_calibration= get_temperature()
-	        noise_lvl_calibration=get_noise()
-
-        elif elapsed_time==120:
             gases_threshold=get_gases()
+            pressure_calibration=bme280.get_pressure()
+	    humidity_calibration=bme280.get_humidity()
+	    light_calibration=ltr559.get_lux()
+	    temperature_calibration= get_temperature()
+	    noise_lvl_calibration=get_noise()
+	    
 
         elif elapsed_time>120:
-	        pressure=bme280.get_pressure()
-	        print("pressure=", pressure)
+	    pressure=bme280.get_pressure()
+	    print("pressure=", pressure)
             humidity=bme280.get_humidity()
-	        print("humidity=",humidity)
+	    print("humidity=",humidity)
             light=ltr559.get_lux()
-	        print("light=",light)
+	    print("light=",light)
             temperature= get_temperature()
-	        print("temperature=",temperature)
+	    print("temperature=",temperature)
             noise_lvl=get_noise()
-	        print("The noise levels are:", noise_lvl)
+	    print("The noise levels are:", noise_lvl)
 
             gases=get_gases()
 
             if gases[0]>gases_threshold[0]:
                 print("OX current value: ",gases[0]," OX threshold: ",gases_threshold[0], " OX concentration is increasing")
             elif gases[0]<gases_threshold[0]:
-                print("OX current value: ",gases[0]," OX threshold: ",gases_threshold[0], " OX concentration is reducing)
+                print("OX current value: ",gases[0]," OX threshold: ",gases_threshold[0], " OX concentration is reducing")
             else:
-                print("OX current value: ",gases[0]," OX threshold: ",gases_threshold[0], " OX concentration is the same as threshold)
+                print("OX current value: ",gases[0]," OX threshold: ",gases_threshold[0], " OX concentration is the same as threshold")
 
             if gases[1]>gases_threshold[1]:
                 print("RED current value: ",gases[1]," RED threshold: ",gases_threshold[1], " RED concentration is reducing")
             elif gases[1]<gases_threshold[1]:
                 print("RED current value: ",gases[1]," RED threshold: ",gases_threshold[1], " RED concentration is increasing")
             else:
-                print("RED current value: ",gases[1]," RED threshold: ",gases_threshold[1], " RED concentration is the same as threshold)
+                print("RED current value: ",gases[1]," RED threshold: ",gases_threshold[1], " RED concentration is the same as threshold")
 
             if gases[2]>gases_threshold[2]:
                 print("NH3 current value: ",gases[2]," NH3 threshold: ",gases_threshold[2], " NH3 concentration is reducing")
             elif gases[2]<gases_threshold[2]:
                 print("NH3 current value: ",gases[2]," NH3 threshold: ",gases_threshold[2], " NH3 concentration is increasing")
             else:
-                print("NH3 current value: ",gases[2]," NH3 threshold: ",gases_threshold[2], " NH3 concentration is the same)
+                print("NH3 current value: ",gases[2]," NH3 threshold: ",gases_threshold[2], " NH3 concentration is the same")
 
-            time.sleep(2)
+            time.sleep(5)
             
 except KeyboardInterrupt:
     pass
