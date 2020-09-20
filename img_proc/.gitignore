@@ -5,5 +5,5 @@ classifiers/training/neg/
 classifiers/training/dangerous/*
 !classifiers/training/dangerous/MDG9.png
 classifiers/training/corrosive/*
-!classifiers/training/dangerous/corrosive.png
+!classifiers/training/corrosive/corrosive.png
 classifiers/training/bg.txt
