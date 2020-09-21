@@ -4,7 +4,7 @@ from ltr559 import LTR559
 from bme280 import BME280
 from enviroplus.noise import Noise
 from subprocess import PIPE, Popen
-
+import numpy as np
 
 def get_cpu_temperature():
     process = Popen(['vcgencmd', 'measure_temp'], stdout=PIPE, universal_newlines=True)
@@ -17,15 +17,15 @@ ltr559=LTR559()
 
 def get_noise():
     amps = noise.get_amplitudes_at_frequency_ranges([
-        (20, 3350), 
+        (20, 3350),
         (3350, 6680),
         (6680,10010),
-        (10010, 13340), 
-        (13340,16670),
-        (16670,20000)
+#	(10010, 13340),
+#        (13340,16670),
+#        (16670,20000)
     ])
     amps = [n * 32 for n in amps]
-    amps=20*math.log(amps,10)
+    amps=np.log10(amps)
     return amps
 
 factor = 2.25
@@ -67,10 +67,10 @@ try:
         if elapsed_time<120:
             gases_threshold=get_gases()
             pressure_calibration=bme280.get_pressure()
-	        humidity_calibration=bme280.get_humidity()
-	        light_calibration=ltr559.get_lux()
-	        temperature_calibration= get_temperature()
-	        noise_lvl_calibration=get_noise()
+	    humidity_calibration=bme280.get_humidity()
+	    light_calibration=ltr559.get_lux()
+	    temperature_calibration= get_temperature()
+	    noise_lvl_calibration=get_noise()
 	    
 
         elif elapsed_time>120:
@@ -95,7 +95,7 @@ try:
             gases=get_gases()
 
             
-            val=[str(run_time),str(pressure),str(humidity),str(light),str(temperature),str(noise_lvl),str(gases)]
+            val=[str(run_time),str(pressure),str(humidity),str(light),str(temperature),str(noise_lvl),str(gases_threshold),str(gases)]
 
             val_str = ",".join(val)
             file1.write(val_str + "\n") 
