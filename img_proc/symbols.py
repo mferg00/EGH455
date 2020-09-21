@@ -5,8 +5,8 @@ import os
 class Symbols:
 
     def __init__(self):
-        self.danger_classifier = cv2.CascadeClassifier('classifiers/dangerous.xml')
-        self.corrosive_classifier = cv2.CascadeClassifier('classifiers/corrosive.xml')
+        self.danger_classifier = cv2.CascadeClassifier('classifiers/dangerous-10.xml')
+        self.corrosive_classifier = cv2.CascadeClassifier('classifiers/corrosive-10.xml')
 
     def find_symbols(self, frame):
         grey = self.preprocess(frame)
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     with Webcam() as cam, Gui() as gui: 
         while cam.running():
             frame = cam.read()  
-            frame = cv2.resize(frame, (100, 100))
+            # frame = cv2.resize(frame, (100, 100))
             
             dangerous, corrosive = symbol_detector.find_symbols(frame)
             symbol_detector.draw_symbols(frame, dangerous, corrosive)

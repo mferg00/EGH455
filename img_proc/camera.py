@@ -30,6 +30,9 @@ class Camera:
     def read(self):
         return self.frame
 
+    def read_as_bytestr(self):
+        return cv2.imencode('.jpg', self.frame)[1].tostring()
+
     def stop(self):
         self.stopped = True
 
