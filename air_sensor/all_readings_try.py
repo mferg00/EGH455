@@ -17,14 +17,15 @@ ltr559=LTR559()
 
 def get_noise():
     amps = noise.get_amplitudes_at_frequency_ranges([
-        (20, 200), #100 200
-        (200, 600), #500 600
-        (600, 1000), # 100 1200
-        (1000,1500),
-        (1500,2000)
-
+        (20, 3350), 
+        (3350, 6680),
+        (6680,10010),
+        (10010, 13340), 
+        (13340,16670),
+        (16670,20000)
     ])
     amps = [n * 32 for n in amps]
+    amps=20*math.log(amps,10)
     return amps
 
 factor = 2.25
@@ -53,6 +54,10 @@ gases_threshold=get_gases()
 
 print("The sensors are calibrating, please wait two minutes.")
 
+file1=open("all_readings.txt","w")
+file1.seek(0)
+file1.truncate()
+
 
 try:
     while True:
@@ -62,25 +67,38 @@ try:
         if elapsed_time<120:
             gases_threshold=get_gases()
             pressure_calibration=bme280.get_pressure()
-	    humidity_calibration=bme280.get_humidity()
-	    light_calibration=ltr559.get_lux()
-	    temperature_calibration= get_temperature()
-	    noise_lvl_calibration=get_noise()
+	        humidity_calibration=bme280.get_humidity()
+	        light_calibration=ltr559.get_lux()
+	        temperature_calibration= get_temperature()
+	        noise_lvl_calibration=get_noise()
 	    
 
         elif elapsed_time>120:
-	    pressure=bme280.get_pressure()
-	    print("pressure=", pressure)
+
+            run_time=elapsed_time -120
+            
+            pressure=bme280.get_pressure()
+            print("pressure=", pressure)
+
             humidity=bme280.get_humidity()
-	    print("humidity=",humidity)
+            print("humidity=",humidity)
+
             light=ltr559.get_lux()
-	    print("light=",light)
+            print("light=",light)
+
             temperature= get_temperature()
-	    print("temperature=",temperature)
+            print("temperature=",temperature)
+
             noise_lvl=get_noise()
-	    print("The noise levels are:", noise_lvl)
+            print("The noise levels are:", noise_lvl)
 
             gases=get_gases()
+
+            
+            val=[str(run_time),str(pressure),str(humidity),str(light),str(temperature),str(noise_lvl),str(gases)]
+
+            val_str = ",".join(val)
+            file1.write(val_str + "\n") 
 
             if gases[0]>gases_threshold[0]:
                 print("OX current value: ",gases[0]," OX threshold: ",gases_threshold[0], " OX concentration is increasing")
@@ -106,4 +124,5 @@ try:
             time.sleep(5)
             
 except KeyboardInterrupt:
+    file1.close()
     pass
