@@ -1,0 +1,63 @@
+.starter-chart {
+    min-width: 0;
+    height: 280px;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .starter-chart {
+        margin-bottom: 0;
+    }
+
+    .hero.starter-chart {
+        grid-column: 1 / span 2;
+    }
+
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 5px;
+    text-align: left;
+  }
+
+
+/* Style tab links */
+.tablink {
+  background-color: #081307;
+  color: #f5f3f3;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 16.66%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+  color: #f5f3f3;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+
+.tabcontent_extra{
+  margin: auto;
+  padding: 10px;
+}
+
+#Pressure {background-color: #f5f3f3;}
+#Humidity {background-color: #f5f3f3;}
+#Light {background-color: #f5f3f3;}
+#Temperature {background-color: #f5f3f3;}
+#Noise {background-color: #f5f3f3;}
+#Gases {background-color: #f5f3f3;}

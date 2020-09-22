@@ -1,12 +1,13 @@
 import mysql.connector
 from mysql.connector import Error
 import simplejson as json
+import time
 
 
-create_table_query = "CREATE TABLE UAVSensors (Id int(11) NOT NULL, Oxidise decimal(16,8) NOT NULL, Reducing decimal(16,8) NOT NULL, Nh3 decimal(16,8) NOT NULL, PRIMARY KEY (Id))"
+create_table_query = "CREATE TABLE UAVSensors (Id int(11) NOT NULL, Time decimal(16,8) NOT NULL, Pressure decimal(16,8) NOT NULL, Humidity decimal(16,8) NOT NULL,  Light decimal(16,8) NOT NULL, Temperature decimal(16,8) NOT NULL, Noise_1 decimal(16,8) NOT NULL, Noise_2 decimal(16,8) NOT NULL, Noise_3 decimal(16,8) NOT NULL, Ox_Threshold decimal(16,8) NOT NULL, Red_Threshold decimal(16,8) NOT NULL, Nh3_Threshold decimal(16,8) NOT NULL, Ox decimal(16,8) NOT NULL, Red decimal(16,8) NOT NULL, Nh3 decimal(16,8) NOT NULL,PRIMARY KEY (Id))"
 delete_table_query = "DELETE FROM UAVSensors"
-insert_query = """INSERT INTO UAVSensors  (Id, Oxidise, Reducing, Nh3) 
-								VALUES (%s, %s, %s, %s) """
+insert_query = """INSERT INTO UAVSensors  (Id, Time, Pressure, Humidity, Light, Temperature, Noise_1, Noise_2, Noise_3, Ox_Threshold, Red_Threshold, Nh3_Threshold, Ox, Red, Nh3) 
+								VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s) """
 select_query = "SELECT Oxidise, Reducing, Nh3 FROM UAVSensors ORDER BY Id DESC limit 10;"
 
 try:
@@ -14,23 +15,27 @@ try:
 										 database='sensors',
 										 user='mysql',
 										 password='mysql')
-	# if connection.is_connected():
-	# 	cursor = connection.cursor()
-	# 	sensors_file = open("readings.txt","r")
-	# 	lines = sensors_file.readlines()
-	# 	num_id = 0
-	# 	for line in lines:
-	# 		if line.find(',') >= 0:
-	# 			line = line.replace("\n","")
-	# 			recordTuple = tuple([num_id]) + tuple(line.split(','))
-	# 			print(recordTuple)
-	# 			cursor.execute(insert_query, recordTuple)
-	# 			connection.commit()
-	# 			num_id = num_id + 1
+	if connection.is_connected():
+		cursor = connection.cursor()
+		# cursor.execute(create_table_query)
+		sensors_file = open("readings.txt","r")
+		lines = sensors_file.readlines()
+		num_id = 0
+		for line in lines:
+			if line.find(',') >= 0:
+				# data_list = []
+				# data_list.append(num_id)
+				line = line.replace("\n","").replace("]","").replace("[","").replace(" ", ",").replace(",,",",")
+				recordTuple = tuple([num_id]) + tuple(x for x in line.split(',') if x)
+				print(recordTuple)
+				time.sleep(5)
+				cursor.execute(insert_query, recordTuple)
+				connection.commit()
+				num_id = num_id + 1
 		
-	# 	print("Insert data into table UavSensors successfully ")
-	cursor = connection.cursor()
-	cursor.execute(select_query)
+		print("Insert data into table UavSensors successfully ")
+	# cursor = connection.cursor()
+	# cursor.execute(select_query)
 	# cursor.execute(create_table_query)
 	# result = cursor.fetchall()
 	# data = json.dumps(result,use_decimal=True)
