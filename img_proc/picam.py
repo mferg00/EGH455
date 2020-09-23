@@ -5,9 +5,19 @@ import numpy as np
 import time
 
 class Picam(Camera):
+    """Class to access the Picamera.
 
-    def __init__(self, resolution=(320, 240), framerate=32):
-        # initialize the camera and stream
+    Args:
+        Camera (Object): Camera class to inherit from.
+    """
+    def __init__(self, do_processing=False, resolution=(320, 240), framerate=32):
+        """Initialise the Pi Camera.
+
+        Args:
+            resolution (tuple, optional): Resolution to record in. Defaults to (320, 240).
+            framerate (int, optional): Framerate to record in. Defaults to 32.
+        """
+        super().__init__(do_processing)
         self.camera = PiCamera()
         self.camera.resolution = resolution
         self.camera.framerate = framerate
@@ -20,16 +30,9 @@ class Picam(Camera):
         self.frame = np.zeros((resolution[1], resolution[0], 3), dtype=np.uint8)
         self.stopped = False
 
-    def cleanup(self):
-        print('picam closed')
-        self.stream.close()
-        self.raw.close()
-        self.camera.close()
-
-    def resolution(self):
-        return self.camera.resolution
-
-    def update(self):
+    def _update(self):
+        """Parent method override, stores frames in self.frame.
+        """
         # keep looping infinitely until the thread is stopped
         for f in self.stream:
             # grab the frame from the stream and clear the stream in
@@ -39,16 +42,33 @@ class Picam(Camera):
             # if the thread indicator variable is set, stop the thread
             # and resource camera resources
             if self.stopped:
-                self.cleanup()
+                self._cleanup()
                 return
+
+    def _cleanup(self):
+        """Parent method override, closes camera streams.
+        """
+        print('picam closed')
+        self.stream.close()
+        self.raw.close()
+        self.camera.close()
+
+    def resolution(self):
+        """Get resolution of the Pi Camera
+
+        Returns:
+            tuple: Containing:
+                - width (int): width of camera (px)
+                - height (int): height of camera (px)
+        """
+        return self.camera.resolution
               
-                
 if __name__ == '__main__':
     
     from recorder import Recorder
 
-    with Picam() as cam, Recorder(cam.resolution()) as recorder:
-        while(cam.running() and recorder.running()):
-            frame = cam.read()
+    with Picam(do_processing=True) as cam, Recorder(cam.resolution()) as recorder:
+        while (cam.running() and recorder.running()):
+            frame = cam.get_frame(get_processed=True)
             recorder.write(frame)
         

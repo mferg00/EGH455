@@ -1,10 +1,8 @@
 import cv2
 
 class Gui:
-
-    def __init__(self):
-        pass 
-    
+    """Simple class to access openCV gui
+    """
     def __enter__(self):
         return self 
 
@@ -17,7 +15,7 @@ class Gui:
 
     def imshow(self, frame):
         cv2.imshow('frame', frame)
-        key = cv2.waitKey(1) & 0xFF 
+        key = cv2.waitKey(1) & 0xFF
 
         return not \
             ((cv2.getWindowProperty('frame', cv2.WND_PROP_VISIBLE) < 1) \

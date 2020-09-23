@@ -48,5 +48,5 @@ cd ../
 # cwd = training
 createsamples corrosive corrosive
 createsamples dangerous MDG9
-dotraining corrosive 10
-dotraining dangerous 10
+dotraining corrosive 3
+dotraining dangerous 3

@@ -4,3 +4,4 @@ web_interface/env
 web_interface/readings.txt
 web_interface/app/*.jpg
 node_modules
+.DS_Store
