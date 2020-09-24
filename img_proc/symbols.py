@@ -5,11 +5,11 @@ import os
 class Symbols:
     """Class to detect and draw hazard symbols.
     """
-    def __init__(self, level=25):
+    def __init__(self, level=10):
         """Symbol detector initialiser
 
         Args:
-            level (int, optional): Trained cascade classifier level to use. Defaults to 25.
+            level (int, optional): Trained cascade classifier level to use. Defaults to 10.
         """
         self.danger_classifier = cv2.CascadeClassifier(f'classifiers/dangerous-{level}.xml')
         self.corrosive_classifier = cv2.CascadeClassifier(f'classifiers/corrosive-{level}.xml')

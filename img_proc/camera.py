@@ -153,10 +153,12 @@ class Camera:
 
 class AutoCamera():
 
-    def __init__(self, do_processing=False, resolution=(320, 240), framerate=32):
+    def __init__(self, do_processing=False, resolution=(320, 240), fps=32, pps=None, src=0):
         self.frame = np.zeros((resolution[1], resolution[0], 3), dtype=np.uint8)
         self.stopped = False
-        self.framerate = framerate
+        self.fps = fps
+        self.pps = pps
+        self.prev_time = 0
         self.resolution = resolution
         self.aruco = Aruco()
         self.symbols = Symbols()
@@ -166,12 +168,12 @@ class AutoCamera():
         self.num_corrosive = 0
         self.marker_ids = []
 
-        if RPI:
-            print('picam detected')
-            self.__init_picamera()
+        if src != 0 or not RPI:
+            print(f'using webcam with source: {src}')
+            self.__init_webcam(src)
         else:
-            print('picam not detected, using webcam')
-            self.__init_webcam()
+            print('using picam')
+            self.__init_picam()
 
     def __enter__(self):
         self.start()
@@ -183,19 +185,19 @@ class AutoCamera():
     def __init_picamera(self):
         self.camera = PiCamera()
         self.camera.resolution = self.resolution
-        self.camera.framerate = self.framerate
+        self.camera.fps = self.fps
         self.raw = PiRGBArray(self.camera, size=resolution)
         time.sleep(0.1)
         self.stream = self.camera.capture_continuous(self.raw,
             format="bgr", use_video_port=True)
 
-    def __init_webcam(self):
-        self.stream = cv2.VideoCapture(0)
+    def __init_webcam(self, src=0):
+        self.stream = cv2.VideoCapture(src)
         self.stream.set(3, self.resolution[0])
         self.stream.set(4, self.resolution[1])
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.resolution[0])
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.resolution[1])
-        self.stream.set(cv2.CAP_PROP_FPS, self.framerate)
+        self.stream.set(cv2.CAP_PROP_FPS, self.fps)
         (_, self.frame) = self.stream.read()
 
     def __process(self):
@@ -206,6 +208,11 @@ class AutoCamera():
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
                 return
+
+            # if self.pps is not None and time.time() - self.prev_time < 1./self.pps:
+            #     continue
+
+            # self.prev = time.time()
 
             # otherwise, read the next frame from the stream
             frame = self.get_frame()
@@ -326,13 +333,23 @@ class AutoCamera():
 
 if __name__ == '__main__':
 
-    from gui import Gui
-    gui = Gui()
+    if not RPI:
+        from gui import Gui
+        gui = Gui()
+        
+        with AutoCamera() as cam:
+            while cam.running():
+                frame = cam.get_frame()
+                if not gui.imshow(frame): break
     
-    with AutoCamera() as cam:
-        while cam.running():
-            frame = cam.get_frame()
-            if not gui.imshow(frame): break
+    else:
+        from recorder import Recorder 
+
+        with AutoCamera() as cam, Recorder(cam.resolution()) as recorder:
+            while (cam.running() and recorder.running()):
+                frame = cam.get_frame()
+                recorder.write(frame)
+        
             
      
     

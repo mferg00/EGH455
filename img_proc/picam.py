@@ -10,17 +10,17 @@ class Picam(Camera):
     Args:
         Camera (Object): Camera class to inherit from.
     """
-    def __init__(self, do_processing=False, resolution=(320, 240), framerate=32):
+    def __init__(self, do_processing=False, resolution=(320, 240), fps=32):
         """Initialise the Pi Camera.
 
         Args:
             resolution (tuple, optional): Resolution to record in. Defaults to (320, 240).
-            framerate (int, optional): Framerate to record in. Defaults to 32.
+            fps (int, optional): fps to record in. Defaults to 32.
         """
         super().__init__(do_processing)
         self.camera = PiCamera()
         self.camera.resolution = resolution
-        self.camera.framerate = framerate
+        self.camera.fps = fps
         self.raw = PiRGBArray(self.camera, size=resolution)
         time.sleep(0.1)
         self.stream = self.camera.capture_continuous(self.raw,
