@@ -1,16 +1,19 @@
 from flask import Flask, render_template, request, jsonify, Response
-from utils import yield_frames
+from camera import Camera, html_frame_gen
 
 app = Flask(__name__)
 
 @app.route('/video_feed')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
-    return Response(yield_frames(post_url=None), mimetype='multipart/x-mixed-replace; boundary=frame')
+    return Response(html_frame_gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/test')
 def test():
     return 'hello world'
 
+def run():
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=5000, debug=True)
+	run()

@@ -7,7 +7,7 @@ class Recorder:
     """Class to record videos frame by frame
     """
     def __init__(self, resolution: tuple, overwrite=True, \
-        fps=20.0, time_limit=5):
+        fps=20.0, time_limit=None):
         """Recorder initialiser.
 
         Args:
@@ -31,7 +31,10 @@ class Recorder:
             fps, 
             resolution)
 
-        self.time_limit = time.time() + time_limit
+        if time_limit is not None:
+            self.time_limit = time.time() + time_limit
+        else:
+            self.time_limit = None
 
     def __enter__(self):
         return self
@@ -51,7 +54,7 @@ class Recorder:
         Returns:
             bool: True if time limit hasn't been exceeded.
         """
-        return not time.time() >= self.time_limit
+        return self.time_limit is None or not time.time() >= self.time_limit
 
     def write(self, frame):
         """Writes the frame to the file

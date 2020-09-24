@@ -1,4 +1,5 @@
 import cv2
+from camera import Camera 
 
 class Gui:
     """Simple class to access openCV gui
@@ -20,3 +21,10 @@ class Gui:
         return not \
             ((cv2.getWindowProperty('frame', cv2.WND_PROP_VISIBLE) < 1) \
             or (key == ord('q')))
+
+def show_camera():
+    with Cam(do_processing=True) as cam, Gui() as gui:
+        while cam.running():
+            # get frame from camera
+            frame = cam.get_frame(get_processsed=True)
+            if not gui.imshow(frame): break

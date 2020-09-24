@@ -5,7 +5,7 @@ import os
 class Symbols:
     """Class to detect and draw hazard symbols.
     """
-    def __init__(self, level=10):
+    def __init__(self, level=6):
         """Symbol detector initialiser
 
         Args:
@@ -48,8 +48,8 @@ class Symbols:
         grey = self.__preprocess(frame)
 
         # run cascade clasifer on image
-        danger_results = self.danger_classifier.detectMultiScale(grey, 1.05, 3)
-        corrosive_results = self.corrosive_classifier.detectMultiScale(grey)
+        danger_results = self.danger_classifier.detectMultiScale(grey, 1.05, 6)
+        corrosive_results = self.corrosive_classifier.detectMultiScale(grey, 1.05, 6)
 
         return (danger_results, corrosive_results)
 

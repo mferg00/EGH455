@@ -7,15 +7,18 @@ FONT = cv2.FONT_HERSHEY_SIMPLEX
 class Aruco:
     """Class to detect and draw aruco markers.
     """
-    def __init__(self, aruco_dict=cv2.aruco.DICT_6X6_250):
+    def __init__(self, aruco_dict=cv2.aruco.DICT_4X4_1000):
         """Class initialiser, specify which aruco markers to detect
 
         Args:
-            aruco_dict (dict, optional): The openCV aruco dictionary to detect aruco markers with. Defaults to cv2.aruco.DICT_6X6_250.
+            aruco_dict (dict, optional): The openCV aruco dictionary to detect aruco markers with. Defaults to cv2.aruco.DICT_4X4_1000.
         """
         self.dictionary = cv2.aruco.Dictionary_get(aruco_dict)
         self.parameters =  cv2.aruco.DetectorParameters_create()
 
+        # https://docs.opencv.org/master/d5/dae/tutorial_aruco_detection.html
+        self.parameters.minMarkerPerimeterRate = 0.1
+        
     def find(self, frame: np.ndarray):
         """Find aruco markers in a frame.
 
@@ -40,15 +43,18 @@ class Aruco:
             marker_ids (list): List of marker ids.
         """
         if marker_ids is not None: 
-            for marker_corner_marker_id in zip(marker_corners, marker_ids):
+            for marker_corner, marker_id in zip(marker_corners, marker_ids):
                 cv2.putText(frame, str(marker_ids[0]), 
-                    tuple(marker_corners[0][0]), FONT, 
+                    tuple(marker_corner[0][0]), FONT, 
                     1, (255, 0, 0), 1, 
                     cv2.LINE_AA)
 
-                corners = np.int32(marker_corners).reshape((-1, 1, 2))
+                corners = np.int32(marker_corner).reshape((-1, 1, 2))
                 cv2.polylines(frame, [corners], True, (0, 0, 255), thickness=2)
 
 if __name__ == '__main__':
     pass
+
+
+
  
