@@ -7,3 +7,4 @@ classifiers/training/dangerous/*
 classifiers/training/corrosive/*
 !classifiers/training/corrosive/corrosive.png
 classifiers/training/bg.txt
+ml/training/frames/

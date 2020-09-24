@@ -56,11 +56,11 @@ class Webcam(Camera):
 
 if __name__ == '__main__':
 
-    from gui import Gui
+    from recorder import Recorder
 
-    with Webcam(do_processing=False) as cam, Gui() as gui: 
-        while cam.running():
-            frame = cam.get_frame(get_processed=True)
-            if not gui.imshow(frame): break
+    with Webcam(do_processing=False) as cam, Recorder(cam.resolution()) as recorder: 
+        while cam.running() and recorder.running():
+            frame = cam.get_frame()
+            recorder.write(frame)
 
 
