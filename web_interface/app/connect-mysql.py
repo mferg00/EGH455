@@ -8,29 +8,37 @@ delete_table_query = "DELETE FROM UAVSensors"
 insert_query = """INSERT INTO UAVSensors  (Id, Oxidise, Reducing, Nh3) 
 								VALUES (%s, %s, %s, %s) """
 select_query = "SELECT Oxidise, Reducing, Nh3 FROM UAVSensors ORDER BY Id DESC limit 10;"
+insert_label_query = "INSERT INTO Labels (Id, LabelName, Output) VALUES(%s, %s, %s)"
+
+
 
 try:
-	connection = mysql.connector.connect(host='localhost',
+	connection = mysql.connector.connect(host='172.19.58.168',
 										 database='sensors',
 										 user='mysql',
 										 password='mysql')
-	# if connection.is_connected():
-	# 	cursor = connection.cursor()
-	# 	sensors_file = open("readings.txt","r")
-	# 	lines = sensors_file.readlines()
-	# 	num_id = 0
-	# 	for line in lines:
-	# 		if line.find(',') >= 0:
-	# 			line = line.replace("\n","")
-	# 			recordTuple = tuple([num_id]) + tuple(line.split(','))
-	# 			print(recordTuple)
-	# 			cursor.execute(insert_query, recordTuple)
-	# 			connection.commit()
-	# 			num_id = num_id + 1
+	if connection.is_connected():
+		cursor = connection.cursor()
+		# sensors_file = open("readings.txt","r")
+		# lines = sensors_file.readlines()
+		# num_id = 0
+		# for line in lines:
+		# 	if line.find(',') >= 0:
+		# 		line = line.replace("\n","")
+		# 		recordTuple = tuple([num_id]) + tuple(line.split(','))
+		# 		print(recordTuple)
+		# 		cursor.execute(insert_query, recordTuple)
+		# 		connection.commit()
+		# 		num_id = num_id + 1
+		test_data = [0,"Harry","Harry"]
+		# counter, label, outout
+		cursor.execute("SHOW TABLES;")
+		result = cursor.fetchall()
+		print(result)
 		
 	# 	print("Insert data into table UavSensors successfully ")
-	cursor = connection.cursor()
-	cursor.execute(select_query)
+	# cursor = connection.cursor()
+	# cursor.execute(select_query)
 	# cursor.execute(create_table_query)
 	# result = cursor.fetchall()
 	# data = json.dumps(result,use_decimal=True)

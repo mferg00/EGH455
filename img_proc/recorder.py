@@ -1,13 +1,14 @@
 import time
 import cv2 
+import numpy as np
 from pathlib import Path
 import os
 
 class Recorder:
     """Class to record videos frame by frame
     """
-    def __init__(self, resolution: tuple, overwrite=True, \
-        fps=20.0, time_limit=None):
+    def __init__(self, resolution: Tuple[int, int], overwrite: bool=True, \
+        fps: float=20.0, time_limit: int=None):
         """Recorder initialiser.
 
         Args:
@@ -48,7 +49,7 @@ class Recorder:
         print('writer released')
         self.out.release()
     
-    def running(self):
+    def running(self) -> bool:
         """Checks if the camera has exceeded the specified time limit.
 
         Returns:
@@ -56,7 +57,7 @@ class Recorder:
         """
         return self.time_limit is None or not time.time() >= self.time_limit
 
-    def write(self, frame):
+    def write(self, frame: np.ndarray):
         """Writes the frame to the file
 
         Args:

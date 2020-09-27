@@ -1,3 +1,4 @@
+from typing import Tuple
 import cv2
 import numpy as np
 
@@ -7,7 +8,7 @@ FONT = cv2.FONT_HERSHEY_SIMPLEX
 class Aruco:
     """Class to detect and draw aruco markers.
     """
-    def __init__(self, aruco_dict=cv2.aruco.DICT_4X4_1000):
+    def __init__(self, aruco_dict: dict=cv2.aruco.DICT_4X4_1000):
         """Class initialiser, specify which aruco markers to detect
 
         Args:
@@ -19,7 +20,7 @@ class Aruco:
         # https://docs.opencv.org/master/d5/dae/tutorial_aruco_detection.html
         self.parameters.minMarkerPerimeterRate = 0.1
         
-    def find(self, frame: np.ndarray):
+    def find(self, frame: np.ndarray) -> Tuple[list, list, list]:
         """Find aruco markers in a frame.
 
         Args:
@@ -44,13 +45,13 @@ class Aruco:
         """
         if marker_ids is not None: 
             for marker_corner, marker_id in zip(marker_corners, marker_ids):
-                cv2.putText(frame, str(marker_ids[0]), 
+                cv2.putText(frame, str(marker_id), 
                     tuple(marker_corner[0][0]), FONT, 
-                    1, (255, 0, 0), 1, 
+                    0.5, (207, 0, 0), 1, 
                     cv2.LINE_AA)
 
                 corners = np.int32(marker_corner).reshape((-1, 1, 2))
-                cv2.polylines(frame, [corners], True, (0, 0, 255), thickness=2)
+                cv2.polylines(frame, [corners], True, (207, 0, 0), thickness=2)
 
 if __name__ == '__main__':
     pass

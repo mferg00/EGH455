@@ -6,7 +6,8 @@ app = Flask(__name__)
 @app.route('/video_feed')
 def video_feed():
     """Video streaming route. Put this in the src attribute of an img tag."""
-    return Response(html_frame_gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    camera = Camera(**(request.args.to_dict()))
+    return Response(html_frame_gen(camera), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/test')
 def test():
