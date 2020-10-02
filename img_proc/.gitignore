@@ -7,7 +7,7 @@ cascade/training/corrosive/*
 cascade/training/bg.txt
 ml/training/frames/
 ml/opencv/
-ml/keras_yolo3/
+ml/keras_yolo3/*
 !ml/keras_yolo3/utils
 ml/testing/
 ml/training/mi5s-targets
