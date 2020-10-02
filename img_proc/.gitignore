@@ -10,4 +10,3 @@ ml/opencv/
 ml/keras-yolo3
 ml/testing/
 ml/training/mi5s-targets
-ml/label_frames_2.h5

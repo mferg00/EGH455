@@ -77,6 +77,7 @@ class Camera:
         """
         for processor in self.processors:
             processor.load()
+        print(f'procesing with {len(self.processors)} processors')
 
         # keep looping infinitely until the thread is stopped
         while True:
@@ -104,14 +105,6 @@ class Camera:
     def __update_picamera(self):
         """Update the picamera, used in a Thread.
         """
-        self.camera = PiCamera()
-        self.camera.resolution = self.resolution
-        self.camera.framerate = self.fps
-        self.raw = PiRGBArray(self.camera, size=self.resolution)
-        time.sleep(0.1)
-        self.stream = self.camera.capture_continuous(self.raw,
-            format="bgr", use_video_port=True)
-
         # keep looping infinitely until the thread is stopped
         for f in self.stream:
             # grab the frame from the stream and clear the stream in
@@ -131,12 +124,6 @@ class Camera:
     def __update_opencv(self):
         """Update the opencv camera, used in a Thread.
         """
-        self.stream = cv2.VideoCapture(self.src)
-        self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.resolution[0])
-        self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.resolution[1])
-        self.stream.set(cv2.CAP_PROP_FPS, self.fps)
-        (_, self.frame) = self.stream.read()
-
         # keep looping infinitely until the thread is stopped
         while True:
             # if the thread indicator variable is set, stop the thread
@@ -172,13 +159,25 @@ class Camera:
     def start(self):
         """Start the frame retrieval thread and the processing thread if neccessary.
         """
-        if not self.USE_PICAM:
-            print(f'recording with openCV from source: {self.src}')
-            Thread(target=self.__update_opencv, args=()).start()
-        else:
-            print('recording with picam module')
+        if self.USE_PICAM:
+            self.camera = PiCamera()
+            self.camera.resolution = self.resolution
+            self.camera.framerate = self.fps
+            self.raw = PiRGBArray(self.camera, size=self.resolution)
+            time.sleep(0.1)
+            self.stream = self.camera.capture_continuous(self.raw,
+                format="bgr", use_video_port=True)
+            print('recording camera with picam module')
             Thread(target=self.__update_picamera, args=()).start()
-
+        else:
+            self.stream = cv2.VideoCapture(self.src)
+            self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, self.resolution[0])
+            self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, self.resolution[1])
+            self.stream.set(cv2.CAP_PROP_FPS, self.fps)
+            (_, self.frame) = self.stream.read()
+            print(f'recording with openCV from source: {"camera" if self.src == 0 else self.src}')
+            Thread(target=self.__update_opencv, args=()).start()
+        
         if len(self.processors) > 0:
             Thread(target=self.__process, args=()).start()
 
@@ -254,6 +253,7 @@ if __name__ == '__main__':
 
         while cam.running() and gui.running() and cam.new_processed_frame_event.wait(10):
             frame = cam.get_frame(get_processed=True)
+            print(cam.get_results())
 
             if gui.imshow(frame):
                 cam.toggle_pause()

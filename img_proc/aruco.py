@@ -25,6 +25,7 @@ class Aruco(Processor):
         self.aruco_dict = aruco_dict
         self.dictionary = None
         self.parameters_dict = parameters
+        self.parameters = None
 
     def load(self):
         """Load the aruco dictionary and parameters.
@@ -80,23 +81,30 @@ if __name__ == '__main__':
     from gui import Gui
 
     processors = [
-        Aruco()
+        Aruco(parameters={
+            'minMarkerPerimeterRate': 0.1,
+            'polygonalApproxAccuracyRate': 0.15,
+            'maxErroneousBitsInBorderRate': 0.05,
+            'errorCorrectionRate': 0.6
+        })
     ]
     src = 'ml/training/pi-targets.avi'
 
     with Camera(processors=processors, src=src) as cam, Gui() as gui:
         cam.start()
         while cam.running() and gui.running() and cam.new_processed_frame_event.wait(10):
-            frame = cam.get_frame(get_processed=True)
-
             cam.fps = gui.bar('fps', tmin=1, tmax=64, default=64)
 
-            # parameters found here (about 2/3 down page)
-            # https://docs.opencv.org/master/d5/dae/tutorial_aruco_detection.html
+            ##### TWEAK PARAMETERS
+            # more parameters found here (about 2/3 down page): https://docs.opencv.org/master/d5/dae/tutorial_aruco_detection.html
             cam.processors[0].parameters.minMarkerPerimeterRate = gui.bar('minMarkerPerimeterRate: 0.', tmin=1, tmax=1, default=1) / 10.
             cam.processors[0].parameters.polygonalApproxAccuracyRate = gui.bar('polygonalApproxAR: 0.', tmin=1, tmax=99, default=15) / 100.
             cam.processors[0].parameters.maxErroneousBitsInBorderRate = gui.bar('maxErroneuousBitsInBorder: 0.', tmin=1, default=5, tmax=99) / 100.
             cam.processors[0].parameters.errorCorrectionRate = gui.bar('errorCorrectionRate: 0.', tmin=1, tmax=9, default=6) / 10.
+            #####
+
+            frame = cam.get_frame(get_processed=True)
+            # print(cam.get_results())
 
             if gui.imshow(frame):
                 cam.toggle_pause()
