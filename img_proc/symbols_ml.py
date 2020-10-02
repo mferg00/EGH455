@@ -1,8 +1,8 @@
 from typing import Tuple, List, Union
 import os
 import json
-from ml.keras_yolo3.utils.utils import get_yolo_boxes, makedirs
-from ml.keras_yolo3.utils.bbox import BoundBox, draw_boxes
+from ml.utils.utils import get_yolo_boxes, makedirs
+from ml.utils.bbox import BoundBox, draw_boxes
 from keras.models import load_model
 import numpy as np
 
