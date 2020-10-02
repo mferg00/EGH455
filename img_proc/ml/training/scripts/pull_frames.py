@@ -1,7 +1,7 @@
 import cv2
 
 # Opens the Video file
-cap= cv2.VideoCapture('../pi-targets.avi')
+cap= cv2.VideoCapture('../mi5s-targets/mi5s-targets.mp4')
 i=0
 count = 0
 while(cap.isOpened()):
@@ -9,9 +9,9 @@ while(cap.isOpened()):
     if ret == False:
         break
 
-    if count == 0:
+    if count == 16:
         i+=1
-        cv2.imwrite('../frames/frame-'+str(i)+'.jpg',frame)
+        cv2.imwrite('../mi5s-targets/imgs/frame-'+str(i)+'a.jpg',frame)
 
     count += 1
 

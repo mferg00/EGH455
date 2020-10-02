@@ -121,7 +121,7 @@ if __name__ == '__main__':
         gui.add_bar('recording height (cm): ', min=1, default=160, max=1000)
         gui.add_bar('detection bounds (px): ', min=1, default=30, max=200)
 
-        while cam.running() and gui.running():
+        while cam.running() and gui.running() and cam.new_processed_frame_event.wait(10):
             w_px, h_px = calculate_px_dim(height_m=(gui.get_bar('recording height (cm): ') / 100))
             frame = cam.get_frame().copy()
             bounds = gui.get_bar('detection bounds (px): ')
