@@ -2,12 +2,11 @@ from platform import processor
 import cv2
 from threading import Thread, Event
 from typing import Tuple, Union, List, Iterator
-from time import time
 
 try:
     from picamera.array import PiRGBArray
     from picamera import PiCamera
-    RPI = True
+    RPI = True 
 except ImportError:
     RPI = False
 
@@ -37,7 +36,6 @@ class Camera:
         fps: int = 32,
         src: Union[int, str] = 0,
         processors: List[Processor] = [],
-        send_to_db: bool = False,
         prevent_picam: bool = False
     ):
         """Initialiser
@@ -51,9 +49,7 @@ class Camera:
         """
         self.USE_PICAM = RPI and not prevent_picam and src == 0
         self.processors = processors
-        self.results: dict = {'dangerous': 0, 'corrosive': 0, 'aruco_ids': []}
-        self.send_to_db = send_to_db
-        self.connection = None
+        self.results: dict = {}
         self.src = src
         self.stopped = False
         self.fps = fps
@@ -234,11 +230,13 @@ class Camera:
         """
         return self.results
 
+    def read_as_bytestr(self):
+        return cv2.imencode('.jpg', self.frame)[1].tostring()
+
     def stop(self):
         """Stops the camera and processing thread.
         """
         self.stopped = True
-
 
 if __name__ == '__main__':
     """Gui testing with both processors
@@ -253,14 +251,12 @@ if __name__ == '__main__':
     ]
     src = 'ml/training/pi-targets.avi'
 
-    start_time = time.time()
-
-    with Camera(processors=processors, src=0, fps=60) as cam, Gui() as gui:
+    with Camera(processors=processors, src=src, fps=60) as cam, Gui() as gui:
         cam.start()
 
         while cam.running() and gui.running() and cam.new_processed_frame_event.wait(10):
             frame = cam.get_frame(get_processed=True)
-            results = cam.get_results()
+            print(cam.get_results())
 
             if gui.imshow(frame):
                 cam.toggle_pause()

@@ -12,7 +12,11 @@ insert_query = """INSERT INTO UAVSensors  (Time, Pressure, Humidity, Light, Temp
 								VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s) """
 
 
+<<<<<<< HEAD
+connection = mysql.connector.connect(host='172.20.10.2',
+=======
 connection = mysql.connector.connect(host='172.20.10.14',
+>>>>>>> origin/master
 													database='sensors',
 													user='mysql',
 													password='mysql')
@@ -112,8 +116,12 @@ try:
 					noise_1, noise_2, noise_3 = noise_lvl
 					ox_thresh, red_thresh, nh3_thresh = gases_threshold
 					ox, red, nh3 = gases
+<<<<<<< HEAD
+					sensor_data = [float(run_time),float(pressure),float(humidity),float(light),float(temperature),float(noise_1),float(noise_2),float(noise_3),float(ox_thresh),float(red_thresh), float(nh3_thresh),float(ox), float(red), float(nh3)]
+=======
 					ox_thresh, red_thresh, nh3_thresh = float(ox)
 					sensor_data = [round(run_time,4),round(pressure,4),round(humidity,4),round(light,4),round(temperature,4),round(noise_1,4),round(noise_2,4),round(noise_3,4),round(ox_thresh,4),round(red_thresh,4), round(nh3_thresh,4),round(ox,4), round(red,4), round(nh3,4)]
+>>>>>>> origin/master
 					print("Sensor data")
 					print(sensor_data)
 					recordTuple = tuple(sensor_data)
