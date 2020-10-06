@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, List
 import cv2
 import numpy as np
 
@@ -55,9 +55,9 @@ class Aruco(Processor):
             results (Tuple[list, list, list]): The results from find().
 
         Returns:
-            dict: A dict with 'aruco' as the key and the marker ids as the value.
+            dict: A dict with 'aruco_ids' as the key and the marker ids as the value.
         """
-        return {'aruco': results[1]}
+        return {'aruco_ids': [] if results[1] is None else results[1].flatten().tolist()}
 
     def draw_results(self, frame: np.ndarray, results: Tuple[list, list, list]):
         marker_ids = results[1]
@@ -97,6 +97,9 @@ if __name__ == '__main__':
 
             ##### TWEAK PARAMETERS
             # more parameters found here (about 2/3 down page): https://docs.opencv.org/master/d5/dae/tutorial_aruco_detection.html
+            cam.processors[0].parameters.adaptiveThreshWinSizeMin = gui.bar('thresh min size: ', tmin=3, tmax=15, default=3)
+            cam.processors[0].parameters.adaptiveThreshWinSizeMax = gui.bar('thresh max size: ', tmin=15, tmax=30, default=23)
+            cam.processors[0].parameters.adaptiveThreshWinSizeStep = gui.bar('thresh step size: ', tmin=3, tmax=30, default=10)
             cam.processors[0].parameters.minMarkerPerimeterRate = gui.bar('minMarkerPerimeterRate: 0.', tmin=1, tmax=1, default=1) / 10.
             cam.processors[0].parameters.polygonalApproxAccuracyRate = gui.bar('polygonalApproxAR: 0.', tmin=1, tmax=99, default=15) / 100.
             cam.processors[0].parameters.maxErroneousBitsInBorderRate = gui.bar('maxErroneuousBitsInBorder: 0.', tmin=1, default=5, tmax=99) / 100.
@@ -104,7 +107,7 @@ if __name__ == '__main__':
             #####
 
             frame = cam.get_frame(get_processed=True)
-            # print(cam.get_results())
+            print(cam.get_results())
 
             if gui.imshow(frame):
                 cam.toggle_pause()

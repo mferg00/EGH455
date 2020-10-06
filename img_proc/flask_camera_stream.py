@@ -8,7 +8,7 @@ from aruco import Aruco
 
 app = Flask(__name__)
 
-def yield_frames(cam: Camera, get_processed: bool = True) -> Iterator[str]:
+def yield_frames(cam: Camera, get_processed: bool = True, send_to_db: bool = True) -> Iterator[str]:
     """Yield frames from camera for html usage.
 
     Args:
@@ -23,6 +23,11 @@ def yield_frames(cam: Camera, get_processed: bool = True) -> Iterator[str]:
 
         while cam.running() and cam.new_processed_frame_event.wait(10):
             frame = cam.get_frame(get_processed=get_processed)
+
+            if send_to_db:
+                results = cam.get_data()
+                # send resutls to db
+                
             yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tostring() + b'\r\n')
 
