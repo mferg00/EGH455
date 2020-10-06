@@ -1,0 +1,1 @@
+python3 img_proc/flask_camera_stream.py & python3 air_sensor/all_readings_sql.py && kill $!

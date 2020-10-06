@@ -9,6 +9,29 @@ from camera import Camera
 # Initialize Flask web app
 app = Flask(__name__)
 
+
+@app.route('/get_labels',methods=['GET'])
+def get_labels():
+	try:
+		connection = mysql.connector.connect(host='localhost',
+										 database='sensors',
+										 user='mysql',
+										 password='mysql')
+		select_label_query = "SELECT Dangerous, Corrosive, Aruco FROM Labels ORDER BY Time DESC LIMIT 1;"
+		cursor = connection.cursor()
+		cursor.execute(select_label_query)
+		result = cursor.fetchall()
+		result_labels = []
+		result_labels.append(result[0][0])
+		result_labels.append(result[0][1])
+		aruco = result[0][2].replace('[','').replace(']','')
+		aruco = [int(x) for x in aruco.split(',')]
+		result_labels.append(aruco)
+		
+	except Error as e:
+		result_labels = []
+	return jsonify(result_labels)
+
 @app.route('/get_gases',methods=['GET'])
 def get_gases():
 	try:
@@ -19,11 +42,11 @@ def get_gases():
 		select_gas_query = "SELECT Ox_Threshold, Red_Threshold, Nh3_Threshold, Ox, Red, Nh3  FROM UAVSensors ORDER BY Time DESC LIMIT 1;"
 		cursor = connection.cursor()
 		cursor.execute(select_gas_query)
-		result = cursor.fetchall()
+		result_gases = cursor.fetchall()
 		
 	except Error as e:
-		result = []
-	return jsonify(result)
+		result_gases = []
+	return jsonify(result_gases)
 
 
 @app.route('/get_data',methods=['GET'])
@@ -33,7 +56,7 @@ def get_data():
 										 database='sensors',
 										 user='mysql',
 										 password='mysql')
-		select_total_query = "SELECT Id, Time, Pressure, Humidity, Light, Temperature, Noise_1, Noise_2, Noise_3 FROM UAVSensors ORDER BY Time ASC;"
+		select_total_query = "SELECT Time, Pressure, Humidity, Light, Temperature, Noise_1, Noise_2, Noise_3 FROM UAVSensors ORDER BY Time ASC;"
 		cursor = connection.cursor()
 		cursor.execute(select_total_query)
 		result = cursor.fetchall()

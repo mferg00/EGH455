@@ -1,9 +1,21 @@
-__pycache__/
-.vscode/
 vids/
+<<<<<<< HEAD
 classifiers/training/neg/
 classifiers/training/dangerous/*
 !classifiers/training/dangerous/MDG9.png
 classifiers/training/corrosive/*
 !classifiers/training/corrosive/corrosive.png
 classifiers/training/bg.txt
+=======
+cascade/training/neg/
+cascade/training/dangerous/*
+!cascade/training/dangerous/MDG9.png
+cascade/training/corrosive/*
+!cascade/training/corrosive/corrosive.png
+cascade/training/bg.txt
+ml/training/frames/
+ml/opencv/
+ml/keras-yolo3
+ml/testing/
+ml/training/mi5s-targets
+>>>>>>> 077fa5d4c92754339ad63597268f545f69e01d18

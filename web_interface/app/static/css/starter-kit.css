@@ -1,7 +1,11 @@
 .starter-chart {
     min-width: 0;
-    height: 280px;
+    height: 200px;
     margin-bottom: 1rem;
+}
+
+.labels{
+  display: inline-block;
 }
 
 @media (min-width: 768px) {
