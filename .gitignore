@@ -5,3 +5,4 @@ web_interface/readings.txt
 web_interface/app/*.jpg
 **/node_modules/
 **/.DS_Store
+*.h5

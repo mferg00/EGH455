@@ -15,8 +15,8 @@ class SymbolsMl(Processor):
         Processor (Processor): Parent class to inherit from.
     """
     def __init__(self,
-        config_path: str = 'ml/config_label.json',
-        h5_weight_path: str = 'ml/label_frames_2.h5',
+        config_path: str = 'img_proc/ml/config_label.json',
+        h5_weight_path: str = 'img_proc/ml/label_frames_2.h5',
         quality: int = 4,
         obj_thresh: float = 0.7,
         nms_thresh: float = 0.3
@@ -101,27 +101,30 @@ if __name__ == '__main__':
 
     processors = [
         SymbolsMl(
-            config_path='ml/config_label.json',
-            h5_weight_path='ml/label_frames_2.h5',
+            config_path='img_proc/ml/config_label.json',
+            h5_weight_path='img_proc/ml/label_frames_2.h5',
+            quality=4,
+            obj_thresh=0.7,
+            nms_thresh=0.1
         )
     ]
     src = 'ml/training/pi-targets.avi'
 
-    with Camera(processors=processors, src=src) as cam, Gui() as gui:
+    with Camera(processors=processors, src=src, fps=1) as cam, Gui() as gui:
         cam.start()
 
         while cam.running() and gui.running() and cam.new_processed_frame_event.wait(10):
-            cam.fps = gui.bar('fps', tmin=1, tmax=64, default=64)
+            cam.fps = gui.bar('fps', tmin=1, tmax=64, default=1)
 
             ###### TWEAK PARAMETERS
-            size = gui.bar('quality: ', tmin=1, tmax=20, default=4) * 32
+            size = gui.bar('quality: ', tmin=1, tmax=20, default=10) * 32
             cam.processors[0].net_h, cam.processors[0].net_w = size, size
-            cam.processors[0].obj_thresh = gui.bar('obj thresh: 0.', tmin=1, tmax=9, default=7) / 10.
-            cam.processors[0].nms_thresh = gui.bar('nms thresh: 0.', tmin=1, tmax=9, default=3) / 10.
+            cam.processors[0].obj_thresh = gui.bar('obj thresh: 0.', tmin=1, tmax=100, default=70) / 100.
+            cam.processors[0].nms_thresh = gui.bar('nms thresh: 0.', tmin=1, tmax=100, default=10) / 100.
             ######
 
             frame = cam.get_frame(get_processed=True)
-            # print(cam.get_results())
+            print(cam.get_results())
 
             if gui.imshow(frame):
                 cam.toggle_pause()
