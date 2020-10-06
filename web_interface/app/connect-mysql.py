@@ -10,33 +10,37 @@ insert_query = """INSERT INTO UAVSensors  (Id, Time, Pressure, Humidity, Light, 
 								VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s) """
 select_query = "SELECT Oxidise, Reducing, Nh3 FROM UAVSensors ORDER BY Id DESC limit 10;"
 
+create_label = "CREATE TABLE Labels (Id int(11), LabelName varchar(50), Output varchar(50), PRIMARY KEY (Id))"
+insert_label_query = """INSERT INTO Labels (Id, LabelName,Output) VALUES(%s,%s,%s)"""
+
 try:
 	connection = mysql.connector.connect(host='localhost',
 										 database='sensors',
 										 user='mysql',
 										 password='mysql')
-	if connection.is_connected():
-		cursor = connection.cursor()
-		# cursor.execute(create_table_query)
-		sensors_file = open("readings.txt","r")
-		lines = sensors_file.readlines()
-		num_id = 0
-		for line in lines:
-			if line.find(',') >= 0:
-				# data_list = []
-				# data_list.append(num_id)
-				line = line.replace("\n","").replace("]","").replace("[","").replace(" ", ",").replace(",,",",")
-				recordTuple = tuple([num_id]) + tuple(x for x in line.split(',') if x)
-				print(recordTuple)
-				time.sleep(5)
-				cursor.execute(insert_query, recordTuple)
-				connection.commit()
-				num_id = num_id + 1
+	# if connection.is_connected():
+	# 	cursor = connection.cursor()
+	# 	# cursor.execute(create_table_query)
+	# 	sensors_file = open("readings.txt","r")
+	# 	lines = sensors_file.readlines()
+	# 	num_id = 0
+	# 	for line in lines:
+	# 		if line.find(',') >= 0:
+	# 			# data_list = []
+	# 			# data_list.append(num_id)
+	# 			line = line.replace("\n","").replace("]","").replace("[","").replace(" ", ",").replace(",,",",")
+	# 			recordTuple = tuple([num_id]) + tuple(x for x in line.split(',') if x)
+	# 			print(recordTuple)
+	# 			time.sleep(5)
+		# 		cursor.execute(insert_query, recordTuple)
+		# 		connection.commit()
+		# 		num_id = num_id + 1
 		
-		print("Insert data into table UavSensors successfully ")
-	# cursor = connection.cursor()
+		# print("Insert data into table UavSensors successfully ")
+	cursor = connection.cursor()
 	# cursor.execute(select_query)
-	# cursor.execute(create_table_query)
+	cursor.execute(insert_label_query,tuple([1,"Harry","Harry"]))
+	connection.commit()
 	# result = cursor.fetchall()
 	# data = json.dumps(result,use_decimal=True)
 	# data = json.loads(data)

@@ -1,8 +1,14 @@
-import requests
-import os
+import cv2
 
-# Test the post request to the server
-# res = requests.post('http://172.19.33.44:5000/process', json={"hazard":5, "anchor": [0,1,0,1,1]})
-# if res.ok:
-#     print(res.json())
+vidcap = cv2.VideoCapture('video_targets.mp4')
+success,image = vidcap.read()
+count = 0
+i = 0
+success = True
+while success:
+	success,image = vidcap.read()
+	if i%11 == 0:
+		cv2.imwrite("frames/frame%d.jpg" % count, image)     # save frame as JPEG file
+		count += 1
+	i = i + 1
 
