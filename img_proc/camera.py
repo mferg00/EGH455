@@ -4,11 +4,10 @@ from threading import Thread, Event
 from typing import Tuple, Union, List, Iterator
 from time import time
 
-
 try:
     from picamera.array import PiRGBArray
     from picamera import PiCamera
-    RPI = True 
+    RPI = True
 except ImportError:
     RPI = False
 
@@ -52,7 +51,7 @@ class Camera:
         """
         self.USE_PICAM = RPI and not prevent_picam and src == 0
         self.processors = processors
-        self.results: dict = {'dangerous': 0, 'corrosive': 0, 'aruco_ids': '[]'}
+        self.results: dict = {'dangerous': 0, 'corrosive': 0, 'aruco_ids': []}
         self.send_to_db = send_to_db
         self.connection = None
         self.src = src
