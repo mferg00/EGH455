@@ -15,11 +15,11 @@ class SymbolsMl(Processor):
         Processor (Processor): Parent class to inherit from.
     """
     def __init__(self,
-        config_path: str = 'img_proc/ml/config_label.json',
-        h5_weight_path: str = 'img_proc/ml/label_frames_2.h5',
-        quality: int = 4,
+        config_path: str ='/home/max/uni/EGH455/EGH455/img_proc/ml/config_label.json',
+        h5_weight_path: str ='/home/max/uni/EGH455/EGH455/img_proc/ml/label_frames_annotated2.h5',
+        quality: int = 8,
         obj_thresh: float = 0.7,
-        nms_thresh: float = 0.3
+        nms_thresh: float = 0.1
     ):
         """Initialiser.
 
@@ -101,8 +101,8 @@ if __name__ == '__main__':
 
     processors = [
         SymbolsMl(
-            config_path='img_proc/ml/config_label.json',
-            h5_weight_path='img_proc/ml/label_frames_2.h5',
+            config_path='/home/max/uni/EGH455/EGH455/img_proc/ml/config_label.json',
+            h5_weight_path='/home/max/uni/EGH455/EGH455/img_proc/ml/label_frames_annotated2.h5',
             quality=4,
             obj_thresh=0.7,
             nms_thresh=0.1

@@ -2,14 +2,14 @@
     "model" : {
         "min_input_size":       288,
         "max_input_size":       448,
-        "anchors":              [31,61, 32,52, 35,56, 35,63, 39,63, 40,70, 42,77, 71,41, 96,53],
-        "labels":               ["aruco","corrosive","dangerous"]
+        "anchors":              [0,0, 28,52, 30,56, 31,51, 33,59, 36,62, 75,41, 99,52, 121,67],
+        "labels":               ["corrosive","dangerous"]
     },
 
     "train": {
-        "train_image_folder":   "label_frames_annotated2/images/",
-        "train_annot_folder":   "label_frames_annotated2/annotations/",
-        "cache_name":           "label_frames_annotated2_train.pkl",
+        "train_image_folder":   "label_frames_annotated/images/",
+        "train_annot_folder":   "label_frames_annotated/annotations/",
+        "cache_name":           "label_frames.pkl",
 
         "train_times":          8,
         "batch_size":           16,
@@ -26,14 +26,14 @@
         "class_scale":          1,
 
         "tensorboard_dir":      "logs",
-        "saved_weights_name":   "label_frames_annotated2_2.h5",
+        "saved_weights_name":   "label_frames_2.h5",
         "debug":                true
     },
 
     "valid": {
-        "valid_image_folder":   "label_frames_annotated2/valid_data/images/",
-        "valid_annot_folder":   "label_frames_annotated2/valid_data/annots/",
-        "cache_name":           "label_frames_annotated2_valid.pkl",
+        "valid_image_folder":   "label_frames_annotated/valid_data/images/",
+        "valid_annot_folder":   "label_frames_annotated/valid_data/annots/",
+        "cache_name":           "label_frames.pkl",
 
         "valid_times":          1
     }

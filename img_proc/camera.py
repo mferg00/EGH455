@@ -1,4 +1,3 @@
-from platform import processor
 import cv2
 from threading import Thread, Event
 from typing import Tuple, Union, List, Iterator
@@ -13,6 +12,9 @@ except ImportError:
 
 import numpy as np
 import time
+
+import mysql.connector
+from mysql.connector import Error as SQLError
 
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -37,7 +39,7 @@ class Camera:
         fps: int = 32,
         src: Union[int, str] = 0,
         processors: List[Processor] = [],
-        send_to_db: bool = False,
+        db_host_ip: str = '',
         prevent_picam: bool = False
     ):
         """Initialiser
@@ -50,9 +52,9 @@ class Camera:
             prevent_picam (bool, optional): Prevent the picamera module from loading when on a RPi. Defaults to False.
         """
         self.USE_PICAM = RPI and not prevent_picam and src == 0
+        self.DB_HOST_IP = db_host_ip
         self.processors = processors
         self.results: dict = {'dangerous': 0, 'corrosive': 0, 'aruco_ids': []}
-        self.send_to_db = send_to_db
         self.connection = None
         self.src = src
         self.stopped = False
@@ -106,6 +108,38 @@ class Camera:
                 self.processed_frame = processed_frame
                 self.new_processed_frame_event.set()
 
+    def __database_send(self):
+        """Send to the database, used in a Thread."""
+        insert_label_query = """INSERT INTO Labels (Time,Dangerous,Corrosive,Aruco) VALUES (%s,%s,%s,%s)"""
+        start_time = time.time()
+        connection = mysql.connector.connect(host=self.DB_HOST_IP,
+                                database='sensors',
+                                user='mysql',
+                                password='mysql')
+
+        while True:
+            if self.stopped:
+                print('database connection closed')
+                connection.close()
+                return
+
+            if self.new_processed_frame_event.isSet():
+                try:
+                    if connection.is_connected():
+                        cursor = connection.cursor()
+                        labels_data = (
+                            float(time.time() - start_time), 
+                            int(self.results['dangerous']), 
+                            int(self.results['corrosive']), 
+                            str(self.results['aruco_ids'])
+                        )
+                        cursor.execute(insert_label_query, labels_data)
+                        connection.commit()
+                except SQLError as e:
+                    print("Error while connecting to MySQL: ", e)
+                except Exception as e:
+                    print("Unknown exception when sending to db: ", e)
+
     def __update_picamera(self):
         """Update the picamera, used in a Thread.
         """
@@ -120,7 +154,10 @@ class Camera:
             # if the thread indicator variable is set, stop the thread
             # and resource camera resources
             if self.stopped:
-                self.__cleanup()
+                print('picam closed')
+                self.stream.close()
+                self.raw.close()
+                self.camera.close()
                 return
 
             self.new_frame_event.set()
@@ -132,7 +169,8 @@ class Camera:
         while True:
             # if the thread indicator variable is set, stop the thread
             if self.stopped:
-                self.__cleanup()
+                print('opencv camera closed')
+                self.stream.release()
                 return
 
             # otherwise, read the next frame from the stream
@@ -146,18 +184,6 @@ class Camera:
             self.new_frame_event.set()
 
             time.sleep(1. / self.fps)
-
-    def __cleanup(self):
-        """Cleanup the appropriate camera streams.
-        """
-        if self.USE_PICAM:
-            print('picam closed')
-            self.stream.close()
-            self.raw.close()
-            self.camera.close()
-        else:
-            print('opencv camera closed')
-            self.stream.release()
 
     # PUBLIC METHODS
     def start(self):
@@ -184,6 +210,10 @@ class Camera:
         
         if len(self.processors) > 0:
             Thread(target=self.__process, args=()).start()
+
+        if len(self.DB_HOST_IP) > 0:
+            Thread(target=self.__database_send, args=()).start()
+
 
     def running(self) -> bool:
         """Check whether the camera is still retreiving frames.
@@ -253,9 +283,7 @@ if __name__ == '__main__':
     ]
     src = 'ml/training/pi-targets.avi'
 
-    start_time = time.time()
-
-    with Camera(processors=processors, src=0, fps=60) as cam, Gui() as gui:
+    with Camera(processors=processors, src=src, fps=60, db_host_ip='127.0.0.1') as cam, Gui() as gui:
         cam.start()
 
         while cam.running() and gui.running() and cam.new_processed_frame_event.wait(10):
