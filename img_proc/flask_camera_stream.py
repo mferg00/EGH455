@@ -12,7 +12,7 @@ DB_HOST_IP = '0.0.0.0' if len(argv) < 2 else argv[1]
 
 app = Flask(__name__)
 
-def yield_frames(cam: Camera, get_processed: bool = True, send_to_db: bool = True) -> Iterator[str]:
+def yield_frames(cam: Camera, get_processed: bool = True) -> Iterator[str]:
     """Yield frames from camera for html usage.
 
     Args:

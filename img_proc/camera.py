@@ -121,7 +121,7 @@ class Camera:
                 connection.close()
                 return
 
-            if self.new_processed_frame_event.isSet():
+            if self.new_processed_frame_event.isSet() and self.results:
                 try:
                     if connection.is_connected():
                         cursor = connection.cursor()

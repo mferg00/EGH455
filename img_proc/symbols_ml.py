@@ -17,7 +17,7 @@ class SymbolsMl(Processor):
     def __init__(self,
         config_path: str ='/home/max/uni/EGH455/EGH455/img_proc/ml/config_label.json',
         h5_weight_path: str ='/home/max/uni/EGH455/EGH455/img_proc/ml/label_frames_annotated2.h5',
-        quality: int = 8,
+        quality: int = 10,
         obj_thresh: float = 0.7,
         nms_thresh: float = 0.1
     ):
