@@ -7,10 +7,21 @@ from camera import Camera
 from symbols_ml import SymbolsMl
 from aruco import Aruco
 
+import mysql.connector
+from mysql.connector import Error as SQLError
+
 from sys import argv
 DB_HOST_IP = '0.0.0.0' if len(argv) < 2 else argv[1]
 
 app = Flask(__name__)
+
+insert_label_query = """INSERT INTO Labels (Time,Dangerous,Corrosive,Aruco) VALUES (%s,%s,%s,%s)"""
+start_time = time.time()
+connection = mysql.connector.connect(host=DB_HOST_IP,
+                        database='sensors',
+                        user='mysql',
+                        password='mysql')
+
 
 def yield_frames(cam: Camera, get_processed: bool = True) -> Iterator[str]:
     """Yield frames from camera for html usage.
@@ -27,6 +38,25 @@ def yield_frames(cam: Camera, get_processed: bool = True) -> Iterator[str]:
 
         while cam.running() and cam.new_processed_frame_event.wait(10):
             frame = cam.get_frame(get_processed=get_processed)
+            results = cam.get_results()
+
+            try:
+                if connection.is_connected() and results:
+                    cursor = connection.cursor()
+                    labels_data = (
+                        float(time.time() - start_time), 
+                        int(results['dangerous']), 
+                        int(results['corrosive']), 
+                        str(results['aruco_ids'])
+                    )
+                    cursor.execute(insert_label_query, labels_data)
+                    connection.commit()
+            except SQLError as e:
+                print("Error while connecting to MySQL: ", e)
+            except Exception as e:
+                print("Unknown exception when sending to db: ", e)
+
+
                 
             yield (b'--frame\r\n'
                 b'Content-Type: image/jpeg\r\n\r\n' + cv2.imencode('.jpg', frame)[1].tostring() + b'\r\n')
@@ -40,7 +70,7 @@ def video_feed():
     processors = [
         SymbolsMl(), Aruco()
     ]
-    cam = Camera(processors=processors, send_to_db=True)
+    cam = Camera(processors=processors, db_host_ip=DB_HOST_IP)
     return Response(yield_frames(cam, get_processed=True), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/test')

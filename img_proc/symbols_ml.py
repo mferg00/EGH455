@@ -8,6 +8,8 @@ import numpy as np
 
 from camera import Processor
 
+DIR = os.path.dirname(os.path.abspath(__file__))
+
 class SymbolsMl(Processor):
     """Class to detect and draw hazard symbols using machine learning.
 
@@ -15,8 +17,8 @@ class SymbolsMl(Processor):
         Processor (Processor): Parent class to inherit from.
     """
     def __init__(self,
-        config_path: str ='/home/max/uni/EGH455/EGH455/img_proc/ml/config_label.json',
-        h5_weight_path: str ='/home/max/uni/EGH455/EGH455/img_proc/ml/label_frames_annotated2.h5',
+        config_path: str = DIR + '/ml/config_label.json',
+        h5_weight_path: str = DIR + '/ml/label_frames_annotated2.h5',
         quality: int = 10,
         obj_thresh: float = 0.7,
         nms_thresh: float = 0.1
@@ -101,11 +103,7 @@ if __name__ == '__main__':
 
     processors = [
         SymbolsMl(
-            config_path='/home/max/uni/EGH455/EGH455/img_proc/ml/config_label.json',
-            h5_weight_path='/home/max/uni/EGH455/EGH455/img_proc/ml/label_frames_annotated2.h5',
-            quality=4,
-            obj_thresh=0.7,
-            nms_thresh=0.1
+            
         )
     ]
     src = 'ml/training/pi-targets.avi'

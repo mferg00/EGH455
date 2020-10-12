@@ -12,9 +12,6 @@ except ImportError:
 import numpy as np
 import time
 
-import mysql.connector
-from mysql.connector import Error as SQLError
-
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 
 class Processor:
@@ -38,7 +35,6 @@ class Camera:
         fps: int = 32,
         src: Union[int, str] = 0,
         processors: List[Processor] = [],
-        db_host_ip: str = '',
         prevent_picam: bool = False
     ):
         """Initialiser
@@ -51,7 +47,6 @@ class Camera:
             prevent_picam (bool, optional): Prevent the picamera module from loading when on a RPi. Defaults to False.
         """
         self.USE_PICAM = RPI and not prevent_picam and src == 0
-        self.DB_HOST_IP = db_host_ip
         self.processors = processors
         self.results: dict = {}
         self.src = src
@@ -105,38 +100,6 @@ class Camera:
 
                 self.processed_frame = processed_frame
                 self.new_processed_frame_event.set()
-
-    def __database_send(self):
-        """Send to the database, used in a Thread."""
-        insert_label_query = """INSERT INTO Labels (Time,Dangerous,Corrosive,Aruco) VALUES (%s,%s,%s,%s)"""
-        start_time = time.time()
-        connection = mysql.connector.connect(host=self.DB_HOST_IP,
-                                database='sensors',
-                                user='mysql',
-                                password='mysql')
-
-        while True:
-            if self.stopped:
-                print('database connection closed')
-                connection.close()
-                return
-
-            if self.new_processed_frame_event.isSet() and self.results:
-                try:
-                    if connection.is_connected():
-                        cursor = connection.cursor()
-                        labels_data = (
-                            float(time.time() - start_time), 
-                            int(self.results['dangerous']), 
-                            int(self.results['corrosive']), 
-                            str(self.results['aruco_ids'])
-                        )
-                        cursor.execute(insert_label_query, labels_data)
-                        connection.commit()
-                except SQLError as e:
-                    print("Error while connecting to MySQL: ", e)
-                except Exception as e:
-                    print("Unknown exception when sending to db: ", e)
 
     def __update_picamera(self):
         """Update the picamera, used in a Thread.
@@ -208,9 +171,6 @@ class Camera:
         
         if len(self.processors) > 0:
             Thread(target=self.__process, args=()).start()
-
-        if len(self.DB_HOST_IP) > 0:
-            Thread(target=self.__database_send, args=()).start()
 
 
     def running(self) -> bool:
