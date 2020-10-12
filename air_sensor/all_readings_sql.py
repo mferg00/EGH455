@@ -7,16 +7,20 @@ from subprocess import PIPE, Popen
 import numpy as np
 import mysql.connector
 from mysql.connector import Error
+from sys import argv
+
+DB_HOST_IP='0.0.0.0'
+
 
 insert_query = """INSERT INTO UAVSensors  (Time, Pressure, Humidity, Light, Temperature, Noise_1, Noise_2, Noise_3, Ox_Threshold, Red_Threshold, Nh3_Threshold, Ox, Red, Nh3) 
 								VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s) """
 
+if len(argv)<2:
+	DB_HOST_IP='0.0.0.0.'
+else :
+	DB_HOST_IP=argv[1]
 
-<<<<<<< HEAD
-connection = mysql.connector.connect(host='172.20.10.2',
-=======
-connection = mysql.connector.connect(host='172.20.10.14',
->>>>>>> origin/master
+connection = mysql.connector.connect(host=DB_HOST_IP,
 													database='sensors',
 													user='mysql',
 													password='mysql')
@@ -116,12 +120,7 @@ try:
 					noise_1, noise_2, noise_3 = noise_lvl
 					ox_thresh, red_thresh, nh3_thresh = gases_threshold
 					ox, red, nh3 = gases
-<<<<<<< HEAD
 					sensor_data = [float(run_time),float(pressure),float(humidity),float(light),float(temperature),float(noise_1),float(noise_2),float(noise_3),float(ox_thresh),float(red_thresh), float(nh3_thresh),float(ox), float(red), float(nh3)]
-=======
-					ox_thresh, red_thresh, nh3_thresh = float(ox)
-					sensor_data = [round(run_time,4),round(pressure,4),round(humidity,4),round(light,4),round(temperature,4),round(noise_1,4),round(noise_2,4),round(noise_3,4),round(ox_thresh,4),round(red_thresh,4), round(nh3_thresh,4),round(ox,4), round(red,4), round(nh3,4)]
->>>>>>> origin/master
 					print("Sensor data")
 					print(sensor_data)
 					recordTuple = tuple(sensor_data)
@@ -156,3 +155,4 @@ try:
 except KeyboardInterrupt:
 	file1.close()
 	pass
+
