@@ -1,0 +1,10 @@
+**/__pycache__/
+**/.vscode/
+web_interface/env
+web_interface/readings.txt
+**/node_modules/
+**/.DS_Store
+*.h5
+env_label/
+imgs.zip
+label_aruco_json.zip
